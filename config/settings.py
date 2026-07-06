@@ -16,7 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "catalog"
+    "catalog",
 ]
 
 MIDDLEWARE = [
@@ -82,5 +82,5 @@ STATIC_URL = "static/"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"), # Папка static лежит в корне проекта рядом с manage.py
+    os.path.join(BASE_DIR, "static"),  # Папка static лежит в корне проекта рядом с manage.py
 ]
