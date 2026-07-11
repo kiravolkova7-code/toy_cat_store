@@ -5,7 +5,11 @@ from django.views.decorators.csrf import csrf_protect
 
 
 def home(request):
-    return render(request, "home.html")
+    product = Product.objects.all()
+    context = {
+        'product': product,
+    }
+    return render(request, 'home.html', context=context)
 
 
 @csrf_protect
@@ -28,3 +32,10 @@ def home(request):
         'latest_products': latest_products
     }
     return render(request, "home.html", context)
+
+def detail(request, product_id):
+    product = Product.objects.get(id=product_id)
+    context = {
+        'product' : product,
+    }
+    return render(request, 'product_detail.html', context=context)
