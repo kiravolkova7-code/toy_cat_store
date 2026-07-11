@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | Блог{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">{{ post.title }}</h1>
+{% endblock %}
+
+{% block header_lead %}
+    <p class="lead text-muted">
+        {{ post.created_at|date:"d F Y" }} • 👁️ {{ post.view_count }}
+    </p>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    {% if post.preview_image %}
+        <img src="{{ post.preview_image.url }}" class="img-fluid rounded shadow-sm mb-4" alt="{{ post.title }}">
+    {% endif %}
+    
+    <div class="lh-lg fs-5">
+        {{ post.content|linebreaks }}
+    </div>
+
+    <hr class="my-5">
+    <div class="d-flex gap-3 justify-content-center">
+        <a href="{% url 'blogs:blogpost-list' %}" class="btn btn-outline-secondary">← Назад к списку</a>
+        <a href="{% url 'blogs:blogpost-update' post.pk %}" class="btn btn-warning">Редактировать</a>
+        <a href="{% url 'blogs:blogpost-delete' post.pk %}" class="btn btn-danger">Удалить</a>
+    </div>
+</div>
+{% endblock %}

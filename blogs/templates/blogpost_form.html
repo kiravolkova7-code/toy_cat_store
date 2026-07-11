@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}Редактирование{% else %}Новая статья{% endif %}
+{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">{% if object %}Редактировать статью{% else %}Написать статью{% endif %}</h1>
+{% endblock %}
+
+{% block header_lead %}
+    <p class="lead">Заполните поля ниже.</p>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-lg-8">
+        <div class="card box-shadow">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Заголовок -->
+                    <div class="mb-4">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Текст статьи -->
+                    <div class="mb-4">
+                        {{ form.content.label_tag }}
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                            <div class="alert alert-danger mt-2 small">{{ form.content.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Изображение-превью -->
+                    <div class="mb-4">
+                        {{ form.preview_image.label_tag }}
+                        {{ form.preview_image }}
+                        {% if object and object.preview_image %}
+                            <small class="text-muted d-block mt-2">Текущее превью:</small>
+                            <img src="{{ object.preview_image.url }}" class="img-thumbnail mt-2" style="max-width: 300px; border-radius: .375rem; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+                        {% endif %}
+                    </div>
+
+                    <!-- Чекбокс публикации -->
+                    <div class="mb-4 form-check form-switch">
+                        {{ form.is_published }}
+                        {{ form.is_published.label_tag }}
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary flex-fill">
+                            {% if object %}Сохранить изменения{% else %}Опубликовать{% endif %}
+                        </button>
+                        <a href="{% url 'blogs:blogpost-list' %}" class="btn btn-lg btn-block btn-outline-secondary flex-fill">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

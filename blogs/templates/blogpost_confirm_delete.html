@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление статьи{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">Подтвердите удаление</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-lg-8">
+        <div class="card box-shadow">
+            <div class="card-body p-4 text-center">
+                
+                <p>Вы действительно хотите удалить статью:</p>
+                <h3>"{{ object.title }}"</h3>
+                <p class="text-muted small">Действие невозможно будет отменить.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Кнопки действий -->
+                    <div class="d-flex gap-3 justify-content-center mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg flex-fill">
+                            Да, удалить
+                        </button>
+                        <a href="{% url 'blogs:blogpost-detail' object.pk %}" class="btn btn-outline-secondary btn-lg flex-fill">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
