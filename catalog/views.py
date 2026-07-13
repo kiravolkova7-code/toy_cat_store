@@ -5,6 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .forms import ProductForm
 
 from catalog.models import Product
 
@@ -15,7 +17,7 @@ class HomeView(ListView):
     template_name = 'home.html'
     context_object_name = 'latest_products'
     def get_queryset(self):
-        return Product.objects.order_by('-id')[:5]
+        return Product.objects.order_by('-id')[:6]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,3 +46,23 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
+
+class ProductCreateView(CreateView):
+    """Cтраница добавления товара."""
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('catalog:home')
+
+class ProductUpdateView(UpdateView):
+    """Cтраница редактирования товара."""
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('catalog:home')
+
+class ProductDeleteView(DeleteView):
+    """Cтраница удаления товара."""
+    model = Product
+    template_name = 'product_confirm_delete.html'
+    success_url = reverse_lazy('catalog:home')

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Редактирование{% else %}Создание{% endif %} товара | ToyCatStore{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">{% if object %}Редактировать{% else %}Создать новый{% endif %} товар</h1>
+    <p class="lead text-muted">Заполните данные о продукте. Поля с запрещенными словами не будут сохранены.</p>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <!-- Общий блок ошибок (например, запрещенные слова) -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-4">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            <div class="card box-shadow">
+                <div class="card-body">
+                    <!-- Наименование -->
+                    <div class="mb-3">
+                        <label for="{{form.name.id_for_label }}" class="form-label fw-bold">Наименование</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Описание -->
+                    <div class="mb-3">
+                        <label for="{{form.text.id_for_label }}" class="form-label fw-bold">Описание</label>
+                        {{ form.text }}
+                        {% if form.text.errors %}
+                            <div class="text-danger small mt-1">{{ form.text.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <!-- Цена -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{form.price.id_for_label }}" class="form-label fw-bold">Цена</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₽</span>
+                                {{ form.price }}
+                            </div>
+                            {% if form.price.errors %}
+                                <div class="text-danger small mt-1">{{ form.price.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Категория -->
+                        <div class="col-md-6 mb-3">
+                            <label for="{{form.category.id_for_label }}" class="form-label fw-bold">Категория</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Изображение -->
+                    <div class="mb-3">
+                        <label for="{{form.image.id_for_label }}" class="form-label fw-bold">Изображение продукта</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="text-danger small mt-1">{{ form.image.errors }}</div>
+                        {% elif product.image %}
+                            <div class="mt-2">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 200px; height: auto;" class="img-thumbnail">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end">
+                    <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary me-2">Отмена</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}Сохранить изменения{% else %}Добавить товар{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
