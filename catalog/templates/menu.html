@@ -5,4 +5,25 @@
         <a class="p-2 btn btn-outline-primary" href="{% url 'blogs:blogpost-list' %}">Блог</a>
         <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:contacts' %}">Контакты</a>
     </nav>
+     <!-- Блок кнопок профиля (справа) -->
+    <div class="ms-auto d-flex align-items-center gap-2">
+
+        {% if user.is_authenticated %}
+            {# Если пользователь вошел в аккаунт #}
+            <span class="me-3 text-muted align-middle d-none d-md-inline">
+                Привет, {{ user.get_full_name|default:user.email }}!
+            </span>
+
+            <!-- Кнопка выхода. Убираем базовый margin у формы inline-элемента -->
+            <form action="{% url 'users:logout' %}" method="post" class="d-inline m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">Выйти</button>
+            </form>
+
+        {% else %}
+            {# Если пользователь не авторизован #}
+            <a href="{% url 'users:login' %}" class="btn btn-sm btn-outline-success">Войти</a>
+            <a href="{% url 'users:register' %}" class="btn btn-sm btn-outline-primary">Регистрация</a>
+        {% endif %}
+    </div>
 </div>
