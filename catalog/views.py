@@ -1,41 +1,46 @@
 from django.shortcuts import render
-from catalog.models import Product
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.generic import ListView, DetailView
+from django.urls import reverse_lazy
+
+from catalog.models import Product
 
 
-def home(request):
-    product = Product.objects.all()
-    context = {
-        'product': product,
-    }
-    return render(request, 'home.html', context=context)
+class HomeView(ListView):
+    """Список последних 5 товаров для главной страницы."""
+    model = Product
+    template_name = 'home.html'
+    context_object_name = 'latest_products'
+    def get_queryset(self):
+        return Product.objects.order_by('-id')[:5]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
-@csrf_protect
-def contacts(request):
-    if request.method == "POST":
+@method_decorator(csrf_protect, name='dispatch')
+class ContactsView(View):
+    """
+    Обработка формы контактов.
+    """
+    template_name = "contacts.html"
+    success_url = reverse_lazy('catalog:home')
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
         name = request.POST.get('name')
         message = request.POST.get('message')
-        return HttpResponse( f'Спасибо, {name}. Сообщение получено.')
-    else:
-        return render(request, "contacts.html")
+        return HttpResponse(f'Спасибо, {name}. Сообщение получено.')
 
 
-def home(request):
-    latest_products = Product.objects.order_by('-id')[:5]
-
-    for product in latest_products:
-        print(f"ID: {product.id}, Название: {product.name}, Дата: {product.created_at}")
-
-    context = {
-        'latest_products': latest_products
-    }
-    return render(request, "home.html", context)
-
-def detail(request, product_id):
-    product = Product.objects.get(id=product_id)
-    context = {
-        'product' : product,
-    }
-    return render(request, 'product_detail.html', context=context)
+class ProductDetailView(DetailView):
+    """Детальная страница товара."""
+    model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
