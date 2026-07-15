@@ -32,6 +32,7 @@
                                     <text x="50%" y="50%" dy=".3em" font-size="16" fill="#dee2e6" text-anchor="middle">Нет фото</text>
                                 </svg>
                             {% endif %}
+
                         </div>
 
                         <!-- Контейнер для всего содержимого карточки -->
@@ -53,11 +54,32 @@
                                 <div class="d-grid gap-2 my-3">
                                     <a href="{% url 'catalog:product-detail' product.id %}"
                                        class="btn btn-outline-primary btn-block">Подробнее</a>
-                                    {% if user.is_authenticated %}
-                                    <a href="{% url 'catalog:product-edit' product.id %}"
-                                       class="btn btn-warning btn-block">Редактировать</a>
-                                    <a href="{% url 'catalog:product-delete' product.id %}"
-                                       class="btn btn-danger btn-block">Удалить</a>
+
+                                    <!-- БЛОК 1: Управление владельцем или модератором -->
+                                    {% if product.owner == user or perms.auth.delete_product %}
+                                        <a href="{% url 'catalog:product-edit' product.id %}"
+                                           class="btn btn-warning btn-block">Редактировать</a>
+                                        <a href="{% url 'catalog:product-delete' product.id %}"
+                                           class="btn btn-danger btn-block">Удалить</a>
+
+                                        {# Кнопка СНЯТИЯ С ПУБЛИКАЦИИ #}
+                                        {% if product.is_published and perms.catalog.can_unpublish_product %}
+                                            <form action="{% url 'catalog:unpublish-product' product.id %}" method="post" class="mb-2">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-secondary btn-block w-100">
+                                                    Снять с публикации
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                    {# БЛОК 2: Модерация неопубликованных товаров другими пользователями #}
+                                    {% elif not product.is_published and perms.catalog.can_unpublish_product %}
+                                        <form action="{% url 'catalog:publish-product' product.id %}" method="post" class="mb-2">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-block w-100">
+                                                Опубликовать
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </div>
                             </div>
@@ -72,16 +94,23 @@
                 </div>
             {% endfor %}
         </div>
-    <div class="text-center mb-4">
-        {% if user.is_authenticated %}
-        <a href="{% url 'catalog:product-add' %}" class="btn btn-success btn-lg me-2">
-            Добавить товар
-        </a>
-        {% else %}
-        <div class="text-center mb-4 text-muted">
-            Чтобы добавлять товары, <a href="{% url 'users:login' %}">авторизуйтесь</a>.
+
+        <div class="text-center mb-4">
+            {% if user.is_authenticated %}
+            <a href="{% url 'catalog:product-add' %}" class="btn btn-success btn-lg me-2">
+                Добавить товар
+            </a>
+
+            <!-- Доступ к админке для модераторов/суперпользователей -->
+            {% if user.is_staff %}
+                <a href="/admin/" class="btn btn-outline-secondary btn-lg">Панель управления</a>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center mb-4 text-muted">
+                Чтобы добавлять товары, <a href="{% url 'users:login' %}">авторизуйтесь</a>.
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
     </div>
 {% endblock %}
