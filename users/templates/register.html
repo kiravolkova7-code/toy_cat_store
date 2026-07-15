@@ -4,6 +4,15 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="text-center mb-4">Создание учетной записи</h2>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-success w-100">Зарегистрироваться</button>
@@ -12,5 +21,4 @@
             Уже есть аккаунт? <a href="{% url 'users:login' %}">Войти</a>
         </p>
     </div>
-</div>
 {% endblock %}
