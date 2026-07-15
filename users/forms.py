@@ -19,5 +19,8 @@ class RegistrationForm(UserCreationForm):
 
 
 class EmailAuthenticationForm(AuthenticationForm):
-    username = forms.EmailField(widget=forms.EmailInput(attrs={'autofocus': True, 'placeholder': 'Email'}))
-
+    username = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={
+            'autofocus': True,
+            'placeholder': 'Введите email'}))
