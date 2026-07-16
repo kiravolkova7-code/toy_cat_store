@@ -1,4 +1,5 @@
 from django.db import models
+from config import settings
 
 
 class Product(models.Model):
@@ -12,7 +13,7 @@ class Product(models.Model):
         help_text="Загрузите изображение продукта",
     )
     category = models.ForeignKey(
-        to='Category',
+        to="Category",
         on_delete=models.SET_NULL,
         verbose_name="Категория",
         help_text="Укажите категорию продукта",
@@ -23,10 +24,25 @@ class Product(models.Model):
     created_at = models.DateField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateField(auto_now=True, verbose_name="Дата обновления")
 
+    is_published = models.BooleanField(
+        verbose_name="Опубликовано", default=False, help_text="Отметьте, если продукт должен быть виден на сайте"
+    )
+
+    owner = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="products",
+        verbose_name="Владелец",
+        help_text="Автор продукта",
+    )
+
     class Meta:
         ordering = ["name", "category", "price"]
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+        ]
 
     def __str__(self):
         return self.name

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    username = models.CharField(max_length=100, verbose_name='username', )
+    username = models.CharField(max_length=100, verbose_name='username',  blank=True, null=True )
     email = models.EmailField(unique=True, verbose_name='email', help_text='Введите адрес электронной почты' )
 
     avatar = models.ImageField(upload_to='users/avatar/', verbose_name = 'Аватар', blank=True, null=True, help_text='Загрузите фото')
