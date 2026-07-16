@@ -10,8 +10,10 @@ from .forms import ProductForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.cache import cache_page
 
-from catalog.models import Product
+from catalog.models import Product, Category
+from .services import get_products_by_category
 
 
 class HomeView(ListView):
@@ -143,3 +145,30 @@ def unpublish_product(request, pk):
         product.save()
 
     return redirect("catalog:product-detail", pk=pk)
+
+@method_decorator(cache_page(300), name='dispatch')
+class CategoryProductListView(ListView):
+    """Список всех опубликованных продуктов в выбранной категории."""
+    model = Product
+    template_name = "product_list_by_category.html"
+    context_object_name = "products"
+    paginate_by = 6
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, pk=self.kwargs['pk'])
+        return get_products_by_category(self.category.id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_category'] = self.category
+        return context
+
+
+class CategoryListView(ListView):
+    """Страница со списком всех доступных категорий."""
+    model = Category
+    template_name = "category_list.html"
+    context_object_name = "categories"
+
+    def get_queryset(self):
+        return Category.objects.all().order_by('name')
