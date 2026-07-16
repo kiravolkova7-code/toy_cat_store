@@ -92,7 +92,7 @@ class OwnerOrModeratorMixin(UserPassesTestMixin):
 
     def test_func(self):
         obj = self.get_object()
-        return obj.owner == self.request.user or self.request.user.has_perm("auth.delete_product")
+        return obj.owner == self.request.user or self.request.user.has_perm("catalog.delete_product")
 
 
 class ProductUpdateView(LoginRequiredMixin, OwnerOrModeratorMixin, UpdateView):

@@ -43,7 +43,6 @@ class Product(models.Model):
         permissions = [
             ("can_unpublish_product", "Может отменять публикацию продукта"),
         ]
-        default_permissions = ()
 
     def __str__(self):
         return self.name

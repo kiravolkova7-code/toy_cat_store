@@ -58,10 +58,10 @@
                             <hr>
                             <div class="btn-group" role="group">
 
-                                {% if product.owner == user or perms.auth.change_product %}
+                                {% if product.owner == user or perms.catalog.change_product %}
                                     <a href="{% url 'catalog:product-edit' product.pk %}" class="btn btn-outline-primary btn-sm">Редактировать</a>
                                 {% endif %}
-                                {% if product.owner == user or perms.auth.delete_product %}
+                                {% if product.owner == user or perms.catalog.delete_product %}
                                     <a href="{% url 'catalog:product-delete' product.pk %}" class="btn btn-outline-danger btn-sm">Удалить</a>
                                 {% endif %}
 
