@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | ToyCatStore{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">Информация о продукте</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row text-start">
+    <div class="col-lg-9 col-md-6 col-sm-12">
+        <div class="card mb-4 box-shadow">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <td class="w-25">Наименование</td>
+                        <td>{{ product.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Описание</td>
+                        <td>{{ product.text }}</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Изображение</td>
+                        <td>{{ product.image|default:"Изображение отсутствует" }}</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Категория</td>
+                        <td>{{ product.category }}</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Цена</td>
+                        <td>{{ product.price }} p. </td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Статус</td>
+                        <td>
+                            {% if product.is_published %}
+                                <span class="badge bg-success">Опубликовано</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Черновик</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="w-25">Дата создания</td>
+                        <td>{{ product.created_at }}</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25">Дата обновления</td>
+                        <td>{{ product.updated_at }}</td>
+                    </tr>
+
+                    <!-- БЛОК ДЕЙСТВИЙ -->
+                    <tr>
+                        <td colspan="2">
+                            <hr>
+                            <div class="btn-group" role="group">
+
+                                {% if product.owner == user or perms.catalog.change_product %}
+                                    <a href="{% url 'catalog:product-edit' product.pk %}" class="btn btn-outline-primary btn-sm">Редактировать</a>
+                                {% endif %}
+                                {% if product.owner == user or perms.catalog.delete_product %}
+                                    <a href="{% url 'catalog:product-delete' product.pk %}" class="btn btn-outline-danger btn-sm">Удалить</a>
+                                {% endif %}
+
+                                {% if product.is_published and perms.catalog.can_unpublish_product %}
+                                    <form action="{% url 'catalog:unpublish-product' product.pk %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-warning btn-sm">Снять с публикации</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

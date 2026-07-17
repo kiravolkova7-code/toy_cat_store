@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление товара | ToyCatStore{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4 ">Подтвердите удаление</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card border-primary box-shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Вы уверены, что хотите удалить "{{ object }}"?</h3>
+            </div>
+            <div class="card-body">
+                <p>Это действие необратимо. Все данные о товаре, включая его историю и изображение, будут безвозвратно удалены из базы данных.</p>
+                
+                <table class="table table-borderless w-50 mx-auto mb-4">
+                    <tr>
+                        <td class="w-25 text-muted">Цена:</td>
+                        <td>{{ object.price }} ₽</td>
+                    </tr>
+                    <tr>
+                        <td class="w-25 text-muted">Категория:</td>
+                        <td>{{ object.category|default:"—" }}</td>
+                    </tr>
+                </table>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-danger">Да, удалить навсегда</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

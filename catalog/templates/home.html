@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | ToyCatStore{% endblock %}
+
+{% block header_title %}
+    <h1 class="display-4">ToyCatStore</h1>
+{% endblock %}
+
+{% block header_lead %}
+    <p class="lead">- это идеальная возможность подарить эмоции вашим близким, </p>
+    <p class="lead"> удивить их игрушечными котиками под любой вкус и цвет.</p>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Новинки магазина</h3>
+        <div class="row">
+            {% for product in latest_products %}
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100 position-relative">
+                        <!-- Фиксим плейсхолдер картинки -->
+                        <div class="card-img-top text-center p-3" style="min-height: 170px; background-color: #f8f9fa;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                                     style="max-width: 100%; max-height: 100%; display: inline-block;"
+                                     class="mx-auto">
+                            {% else %}
+                                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+                                     role="img" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice"
+                                     focusable="false"><rect width="100%" height="100%" fill="#ced4da"/>
+                                    <text x="50%" y="50%" dy=".3em" font-size="16" fill="#dee2e6" text-anchor="middle">Нет фото</text>
+                                </svg>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-truncate" style="flex-grow: 1;">{{ product.text }}</p>
+                            </div>
+
+                            <div class="mt-3 border-top pt-3">
+                                <div class="d-flex align-items-end gap-3">
+                                    <div class="h5 mb-0">{{ product.price }} ₽</div>
+                                    <small class="text-muted">Добавлен: {{ product.created_at|date:"d.m.Y" }}</small>
+                                </div>
+
+                                <div class="d-grid gap-2 my-3">
+                                    <!-- Кнопка подробнее: ВСЕМ -->
+                                    <a href="{% url 'catalog:product-detail' product.id %}"
+                                       class="btn btn-outline-primary btn-block">Подробнее</a>
+
+                                    <!-- БЛОК УПРАВЛЕНИЯ: только авторизованным пользователям -->
+                                    {% if user.is_authenticated %}
+
+                                        <!-- Удалить и редактировать: АВТОР, АДМИН ИЛИ МОДЕРАТОР -->
+                                        {% if product.owner == user or user.is_staff or perms.catalog.delete_product %}
+                                            <a href="{% url 'catalog:product-edit' product.id %}"
+                                               class="btn btn-warning btn-block">Редактировать</a>
+                                            <a href="{% url 'catalog:product-delete' product.id %}"
+                                               class="btn btn-danger btn-block">Удалить</a>
+                                        {% endif %}
+
+                                        <!-- Модерация: АДМИН ИЛИ МОДЕРАТОР -->
+                                        {% if user.is_staff or perms.catalog.can_unpublish_product %}
+                                            {# Опубликовать — показываем только если товар скрыт #}
+                                            {% if not product.is_published %}
+                                                <form action="{% url 'catalog:publish-product' product.id %}" method="post" class="mb-2">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-success btn-block w-100">
+                                                        Опубликовать
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            {# Снять с публикации — показываем только если товар виден #}
+                                            {% if product.is_published %}
+                                                <form action="{% url 'catalog:unpublish-product' product.id %}" method="post" class="mb-2">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-outline-secondary btn-block w-100">
+                                                        Снять с публикации
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center py-5">
+                        Товаров пока нет.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mb-4">
+            {% if user.is_authenticated %}
+                <a href="{% url 'catalog:product-add' %}" class="btn btn-success btn-lg me-2">
+                    Добавить товар
+                </a>
+                {% if user.is_staff %}
+                    <a href="/admin/" class="btn btn-outline-secondary btn-lg">Панель управления</a>
+                {% endif %}
+            {% else %}
+                <div class="text-center mb-4 text-muted">
+                    Чтобы добавлять товары, <a href="{% url 'users:login' %}">авторизуйтесь</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
